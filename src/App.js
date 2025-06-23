@@ -1,24 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+// import Sidebar from './components/Sidebar';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import SendEmail from './pages/SendEmail';
+import Sidebar from './components/Sidebar';
 
 function App() {
+  const [token, setToken] = useState(localStorage.getItem('token'));
+
+  useEffect(() => {
+    setToken(localStorage.getItem('token'));
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      {token && <Sidebar />}
+      <Routes>
+        <Route
+          path="/"
+          element={!token ? <Login setToken={setToken} /> : <Navigate to="/dashboard" />}
+        />
+        <Route
+          path="/dashboard"
+          element={token ? <Dashboard /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/send"
+          element={token ? <SendEmail /> : <Navigate to="/" />}
+        />
+        <Route
+          path="*"
+          element={<h1 className="text-center text-red-500 mt-10">404 - Page Not Found</h1>}
+        />
+      </Routes>
+    </Router>
   );
 }
 
