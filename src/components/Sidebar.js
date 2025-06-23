@@ -12,7 +12,7 @@ import {
   BoxArrowRight,
   PersonCircle,
   People,
-  ChatLeftText
+  // ChatLeftText
 } from 'react-bootstrap-icons';
 
 export default function Sidebar({ className }) {
@@ -58,7 +58,7 @@ export default function Sidebar({ className }) {
           </Nav.Link>
         </Nav.Item>
         
-        <Nav.Item className="mb-2">
+        {/* <Nav.Item className="mb-2">
           <Nav.Link 
             onClick={() => navigate('/messenger')} 
             className={`d-flex align-items-center py-2 px-3 rounded-3 ${isActive('/messenger') ? 'bg-primary text-white' : 'text-dark hover-bg-light'}`}
@@ -66,7 +66,7 @@ export default function Sidebar({ className }) {
             <ChatLeftText className="me-3" size={18} />
             <span className="fs-6">Messenger</span>
           </Nav.Link>
-        </Nav.Item>
+        </Nav.Item> */}
         
         <Nav.Item className="mb-2">
           <Nav.Link 

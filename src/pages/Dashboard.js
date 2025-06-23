@@ -61,20 +61,14 @@ useEffect(() => {
     },
     { 
       title: "Active Users", 
-      value: "563", 
+      value: "", 
       icon: <People size={20} />, 
       
     },
     { 
       title: "Open Rate", 
-      value: "78%", 
+      value: "", 
       icon: <GraphUp size={20} />, 
-      
-    },
-    { 
-      title: "Avg. Response", 
-      value: "2.4h", 
-      icon: <ClockHistory size={20} />, 
       
     }
   ];
@@ -142,11 +136,11 @@ useEffect(() => {
               <Card.Header className="bg-white border-bottom-0 py-3">
                 <div className="d-flex justify-content-between align-items-center">
                   <h5 className="mb-0 fw-bold">Email Performance</h5>
-                  <div className="d-flex">
+                  {/* <div className="d-flex">
                     <Button variant="outline-secondary" size="sm" className="me-2">Week</Button>
                     <Button variant="outline-secondary" size="sm" className="me-2">Month</Button>
                     <Button variant="primary" size="sm">Quarter</Button>
-                  </div>
+                  </div> */}
                 </div>
               </Card.Header>
               <Card.Body className="p-4">
@@ -162,14 +156,14 @@ useEffect(() => {
 
           
           <Col lg={4}>
-            <Card className="border-0 shadow-sm h-100">
+            <Card className="border-0 shadow-sm h-90">
               <Card.Header className="bg-white border-bottom-0 py-3">
                 <h5 className="mb-0 fw-bold">Quick Actions</h5>
               </Card.Header>
               <Card.Body className="p-3">
                 <div className="d-grid gap-2">
                   <Button
-                    variant="primary"
+                    variant="outline-secondary"
                     className="py-3 rounded-3 text-start d-flex align-items-center"
                     onClick={() => navigate('/send')}
                   >
@@ -190,7 +184,7 @@ useEffect(() => {
                     <ListUl size={20} className="me-3" />
                     <div>
                       <div className="fw-bold">View History</div>
-                      <small className="opacity-75">Past campaigns & reports</small>
+                     
                     </div>
                   </Button>
                   
