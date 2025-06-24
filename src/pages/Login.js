@@ -1,20 +1,20 @@
 import axios from 'axios';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  Button, 
-  Form, 
-  Card, 
-  Alert, 
-  Container, 
-  Row, 
+import {
+  Button,
+  Form,
+  Card,
+  Alert,
+  Container,
+  Row,
   Col,
   InputGroup,
   Spinner
 } from 'react-bootstrap';
-import { 
-  EnvelopeFill, 
-  LockFill, 
+import {
+  EnvelopeFill,
+  LockFill,
   PersonBadge,
   EyeFill,
   EyeSlashFill
@@ -43,7 +43,7 @@ export default function Login({ setToken }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.currentTarget;
-    
+
     if (form.checkValidity() === false) {
       e.stopPropagation();
       setValidated(true);
@@ -53,7 +53,7 @@ export default function Login({ setToken }) {
     try {
       setLoading(true);
       setError('');
-      
+
       const res = await axios.post('http://localhost:5000/api/auth/login', {
         email: formData.email,
         password: formData.password
@@ -128,7 +128,7 @@ export default function Login({ setToken }) {
                       />
                       <Button
                         variant="outline-secondary"
-                        onClick={() => setFormData({...formData, showPassword: !formData.showPassword})}
+                        onClick={() => setFormData({ ...formData, showPassword: !formData.showPassword })}
                       >
                         {formData.showPassword ? <EyeSlashFill /> : <EyeFill />}
                       </Button>
@@ -153,9 +153,9 @@ export default function Login({ setToken }) {
                   </div>
 
                   <div className="d-grid mb-3">
-                    <Button 
-                      variant="primary" 
-                      type="submit" 
+                    <Button
+                      variant="primary"
+                      type="submit"
                       disabled={loading}
                     >
                       {loading ? (
@@ -168,8 +168,8 @@ export default function Login({ setToken }) {
                   </div>
 
                   <div className="text-center small">
-                    <Link 
-                      to="/emplogin" 
+                    <Link
+                      to="/emplogin"
                       className="text-decoration-none d-flex align-items-center justify-content-center"
                     >
                       <PersonBadge className="me-1" size={14} />
@@ -181,7 +181,7 @@ export default function Login({ setToken }) {
             </Card>
 
             <div className="text-center mt-3 text-muted small">
-              © {new Date().getFullYear()} Company Name. All rights reserved.
+              © {new Date().getFullYear()} <a href="https://savruda.in/" style={{ textDecoration: 'none', color: 'inherit' }}>Savruda Innovation</a>. All rights reserved.
             </div>
           </Col>
         </Row>

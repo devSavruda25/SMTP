@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Button,
@@ -33,6 +33,13 @@ export default function EmpLogin({ setToken, setRole }) {
   const [validated, setValidated] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const localToken = localStorage.getItem('token');
+    const sessionToken = sessionStorage.getItem('token');
+    console.log('LocalStorage token:', localToken);
+    console.log('SessionStorage token:', sessionToken);
+  }, []);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
@@ -46,7 +53,6 @@ export default function EmpLogin({ setToken, setRole }) {
     const form = e.currentTarget;
     setError('');
 
-    // Validate form before submission
     if (form.checkValidity() === false) {
       e.stopPropagation();
       setValidated(true);
@@ -55,76 +61,39 @@ export default function EmpLogin({ setToken, setRole }) {
 
     try {
       setLoading(true);
-      console.log('Attempting login with:', { 
-        email: formData.email, 
-        rememberMe: formData.rememberMe 
-      });
-
       const res = await axios.post(
-        'http://localhost:5000/api/employee/emplogin', 
+        'http://localhost:5000/api/employee/emplogin',
         {
           email: formData.email,
           password: formData.password
         },
         {
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          timeout: 10000 // 10 seconds timeout
+          headers: { 'Content-Type': 'application/json' },
+          timeout: 10000
         }
       );
 
-      console.log('Login response:', res.data);
-
-      if (!res.data.token) {
-        throw new Error('No token received in response');
-      }
-
       const token = res.data.token;
-      const storage = formData.rememberMe ? localStorage : sessionStorage;
+      if (!token) throw new Error('No token received');
 
+      const storage = formData.rememberMe ? localStorage : sessionStorage;
       storage.setItem('token', token);
       storage.setItem('role', 'employee');
-      storage.setItem('employeeEmail', formData.email); // Store email for display
+      storage.setItem('employeeEmail', formData.email);
 
       setToken(token);
       setRole('employee');
-
-      // Redirect to dashboard or intended page
-      navigate('/empdashboard', { 
-        state: { from: 'login' },
-        replace: true 
-      });
-
+      navigate('/empdashboard', { replace: true });
     } catch (err) {
       let errorMessage = 'Login failed. Please try again.';
-      
-      if (axios.isCancel(err)) {
-        errorMessage = 'Request timed out. Please check your connection.';
-      } else if (err.response) {
-        // Server responded with error status
-        console.error('Server error:', err.response.data);
-        errorMessage = err.response.data.message || 
-          `Server error: ${err.response.status}`;
-        
-        // Handle specific status codes
-        if (err.response.status === 401) {
-          errorMessage = 'Invalid email or password';
-        } else if (err.response.status === 403) {
-          errorMessage = 'Account not authorized';
-        } else if (err.response.status === 429) {
-          errorMessage = 'Too many attempts. Please try again later.';
-        }
+      if (err.response) {
+        errorMessage = err.response.data.message || `Error: ${err.response.status}`;
+        if (err.response.status === 401) errorMessage = 'Invalid email or password';
       } else if (err.request) {
-        // No response received
-        console.error('Network error:', err.request);
-        errorMessage = 'Network error. Please check your connection.';
+        errorMessage = 'Network error. Check your connection.';
       } else {
-        // Other errors
-        console.error('Login error:', err.message);
-        errorMessage = `Login error: ${err.message}`;
+        errorMessage = `Error: ${err.message}`;
       }
-
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -145,12 +114,7 @@ export default function EmpLogin({ setToken, setRole }) {
                 </div>
 
                 {error && (
-                  <Alert 
-                    variant="danger" 
-                    className="text-center"
-                    dismissible
-                    onClose={() => setError('')}
-                  >
+                  <Alert variant="danger" className="text-center" dismissible onClose={() => setError('')}>
                     {error}
                   </Alert>
                 )}
@@ -159,9 +123,7 @@ export default function EmpLogin({ setToken, setRole }) {
                   <Form.Group className="mb-3" controlId="formEmail">
                     <Form.Label>Email Address</Form.Label>
                     <InputGroup hasValidation>
-                      <InputGroup.Text>
-                        <EnvelopeFill />
-                      </InputGroup.Text>
+                      <InputGroup.Text><EnvelopeFill /></InputGroup.Text>
                       <Form.Control
                         type="email"
                         name="email"
@@ -169,9 +131,7 @@ export default function EmpLogin({ setToken, setRole }) {
                         onChange={handleChange}
                         placeholder="employee@company.com"
                         required
-                        autoFocus
                         autoComplete="email"
-                        pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
                       />
                       <Form.Control.Feedback type="invalid">
                         Please enter a valid email address.
@@ -182,9 +142,7 @@ export default function EmpLogin({ setToken, setRole }) {
                   <Form.Group className="mb-4" controlId="formPassword">
                     <Form.Label>Password</Form.Label>
                     <InputGroup hasValidation>
-                      <InputGroup.Text>
-                        <LockFill />
-                      </InputGroup.Text>
+                      <InputGroup.Text><LockFill /></InputGroup.Text>
                       <Form.Control
                         type={formData.showPassword ? 'text' : 'password'}
                         name="password"
@@ -201,12 +159,11 @@ export default function EmpLogin({ setToken, setRole }) {
                           ...prev,
                           showPassword: !prev.showPassword
                         }))}
-                        aria-label={formData.showPassword ? 'Hide password' : 'Show password'}
                       >
                         {formData.showPassword ? <EyeSlashFill /> : <EyeFill />}
                       </Button>
                       <Form.Control.Feedback type="invalid">
-                        Password must be at least 8 characters.
+                        Password must be at least 6 characters.
                       </Form.Control.Feedback>
                     </InputGroup>
                   </Form.Group>
@@ -220,46 +177,22 @@ export default function EmpLogin({ setToken, setRole }) {
                       checked={formData.rememberMe}
                       onChange={handleChange}
                     />
-                    <Link 
-                      to="/forgot-password" 
-                      className="text-decoration-none small text-primary"
-                    >
+                    <Link to="/forgot-password" className="text-decoration-none small text-primary">
                       Forgot password?
                     </Link>
                   </div>
 
                   <div className="d-grid mb-3">
-                    <Button 
-                      variant="primary" 
-                      type="submit" 
-                      disabled={loading}
-                      size="lg"
-                    >
+                    <Button variant="primary" type="submit" disabled={loading} size="lg">
                       {loading ? (
-                        <>
-                          <Spinner
-                            as="span"
-                            animation="border"
-                            size="sm"
-                            role="status"
-                            aria-hidden="true"
-                            className="me-2"
-                          />
-                          Logging in...
-                        </>
-                      ) : (
-                        'Sign In'
-                      )}
+                        <><Spinner as="span" animation="border" size="sm" className="me-2" />Logging in...</>
+                      ) : 'Sign In'}
                     </Button>
                   </div>
 
                   <div className="text-center small mt-4">
-                    <Link
-                      to="/"
-                      className="text-decoration-none text-primary d-flex align-items-center justify-content-center"
-                    >
-                      <PersonBadge className="me-1" size={14} />
-                      Admin Login
+                    <Link to="/" className="text-decoration-none text-primary d-flex align-items-center justify-content-center">
+                      <PersonBadge className="me-1" size={14} /> Admin Login
                     </Link>
                   </div>
                 </Form>
@@ -267,8 +200,8 @@ export default function EmpLogin({ setToken, setRole }) {
             </Card>
 
             <div className="text-center mt-3 text-muted small">
-              © {new Date().getFullYear()} Your Company. All rights reserved.
-            </div>
+  © {new Date().getFullYear()} <a href="https://savruda.in/" style={{textDecoration: 'none',color: 'inherit'}}>Savruda Innovation</a>. All rights reserved.
+</div>
           </Col>
         </Row>
       </Container>
