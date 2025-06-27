@@ -72,6 +72,7 @@ export default function Login({ setToken }) {
   };
 
   return (
+    
     <div className="d-flex min-vh-100 align-items-center justify-content-center bg-light">
       <Container style={{ maxWidth: '500px' }}>
         <Row className="justify-content-center">

@@ -61,6 +61,7 @@ export default function EmpLogin({ setToken, setRole }) {
 
     try {
       setLoading(true);
+
       const res = await axios.post(
         'http://localhost:5000/api/employee/emplogin',
         {
@@ -73,9 +74,18 @@ export default function EmpLogin({ setToken, setRole }) {
         }
       );
 
-      const token = res.data.token;
-      if (!token) throw new Error('No token received');
+      // 👇 Debug: log full response
+      console.log('Login response:', res.data);
 
+      // ✅ Support both { token } and { data: { token } }
+      const token = res.data.token || res.data.data?.token;
+
+      if (!token) {
+        console.error('Token not found in response:', res.data);
+        throw new Error('No token received from server.');
+      }
+
+      // ✅ Choose where to store token
       const storage = formData.rememberMe ? localStorage : sessionStorage;
       storage.setItem('token', token);
       storage.setItem('role', 'employee');
@@ -83,6 +93,7 @@ export default function EmpLogin({ setToken, setRole }) {
 
       setToken(token);
       setRole('employee');
+
       navigate('/empdashboard', { replace: true });
     } catch (err) {
       let errorMessage = 'Login failed. Please try again.';
@@ -155,10 +166,13 @@ export default function EmpLogin({ setToken, setRole }) {
                       />
                       <Button
                         variant="outline-secondary"
-                        onClick={() => setFormData(prev => ({
-                          ...prev,
-                          showPassword: !prev.showPassword
-                        }))}
+                        onClick={(e) => {
+                          e.preventDefault(); // 🛑 prevent form submit when toggling password visibility
+                          setFormData(prev => ({
+                            ...prev,
+                            showPassword: !prev.showPassword
+                          }));
+                        }}
                       >
                         {formData.showPassword ? <EyeSlashFill /> : <EyeFill />}
                       </Button>
@@ -185,7 +199,10 @@ export default function EmpLogin({ setToken, setRole }) {
                   <div className="d-grid mb-3">
                     <Button variant="primary" type="submit" disabled={loading} size="lg">
                       {loading ? (
-                        <><Spinner as="span" animation="border" size="sm" className="me-2" />Logging in...</>
+                        <>
+                          <Spinner as="span" animation="border" size="sm" className="me-2" />
+                          Logging in...
+                        </>
                       ) : 'Sign In'}
                     </Button>
                   </div>
@@ -200,8 +217,11 @@ export default function EmpLogin({ setToken, setRole }) {
             </Card>
 
             <div className="text-center mt-3 text-muted small">
-  © {new Date().getFullYear()} <a href="https://savruda.in/" style={{textDecoration: 'none',color: 'inherit'}}>Savruda Innovation</a>. All rights reserved.
-</div>
+              © {new Date().getFullYear()}{' '}
+              <a href="https://savruda.in/" style={{ textDecoration: 'none', color: 'inherit' }}>
+                Savruda Innovation
+              </a>. All rights reserved.
+            </div>
           </Col>
         </Row>
       </Container>

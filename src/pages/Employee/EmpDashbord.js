@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Alert, Button } from 'react-bootstrap';
+import { Container, Row, Col, Alert, Button, Card, ProgressBar, Badge } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import axios from 'axios';
@@ -11,6 +11,34 @@ export default function Empdashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+  // Dummy data for dashboard widgets
+  const [dashboardData, setDashboardData] = useState({
+    tasks: {
+      completed: 12,
+      pending: 5,
+      overdue: 2,
+    },
+    projects: [
+      { id: 1, name: 'Website Redesign', progress: 75, deadline: '2023-12-15' },
+      { id: 2, name: 'Mobile App Development', progress: 30, deadline: '2024-02-20' },
+      { id: 3, name: 'Database Migration', progress: 90, deadline: '2023-11-30' },
+    ],
+    upcomingEvents: [
+      { id: 1, title: 'Team Meeting', date: '2023-11-20 10:00', location: 'Conference Room A' },
+      { id: 2, title: 'Project Review', date: '2023-11-22 14:30', location: 'Zoom' },
+      { id: 3, title: 'Training Session', date: '2023-11-25 09:00', location: 'Training Room 2' },
+    ],
+    performance: {
+      rating: 4.2,
+      feedback: 'You are performing above expectations. Keep up the good work!',
+    },
+    recentActivities: [
+      { id: 1, action: 'Completed task', details: 'Homepage redesign', time: '2 hours ago' },
+      { id: 2, action: 'Submitted report', details: 'Q3 Performance Review', time: '1 day ago' },
+      { id: 3, action: 'Attended meeting', details: 'Project kickoff', time: '2 days ago' },
+    ],
+  });
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -176,9 +204,132 @@ export default function Empdashboard() {
 
         {/* Dashboard Widgets */}
         <Row className="g-4">
-          {/* Your widgets here */}
+          {/* Task Summary Card */}
+          <Col md={4}>
+            <Card className="h-100 shadow-sm">
+              <Card.Body>
+                <Card.Title className="d-flex justify-content-between align-items-center">
+                  <span>Task Summary</span>
+                  <Badge bg="primary" pill>
+                    {dashboardData.tasks.completed + dashboardData.tasks.pending + dashboardData.tasks.overdue} Total
+                  </Badge>
+                </Card.Title>
+                <div className="d-flex justify-content-between mb-3">
+                  <div>
+                    <h6 className="text-success">Completed</h6>
+                    <h3>{dashboardData.tasks.completed}</h3>
+                  </div>
+                  <div>
+                    <h6 className="text-warning">Pending</h6>
+                    <h3>{dashboardData.tasks.pending}</h3>
+                  </div>
+                  <div>
+                    <h6 className="text-danger">Overdue</h6>
+                    <h3>{dashboardData.tasks.overdue}</h3>
+                  </div>
+                </div>
+                <Button variant="outline-primary" size="sm" className="w-100">
+                  View All Tasks
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+
+          {/* Performance Card */}
+          <Col md={4}>
+            <Card className="h-100 shadow-sm">
+              <Card.Body>
+                <Card.Title>Your Performance</Card.Title>
+                <div className="text-center mb-3">
+                  <div className="display-4 fw-bold text-primary">
+                    {dashboardData.performance.rating}/5
+                  </div>
+                  <div className="text-muted mb-3">Current Rating</div>
+                  <ProgressBar now={dashboardData.performance.rating * 20} className="mb-3" />
+                </div>
+                <Card.Text className="text-muted">
+                  <small>{dashboardData.performance.feedback}</small>
+                </Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
+
+          {/* Upcoming Events Card */}
+          <Col md={4}>
+            <Card className="h-100 shadow-sm">
+              <Card.Body>
+                <Card.Title>Upcoming Events</Card.Title>
+                <div className="list-group list-group-flush">
+                  {dashboardData.upcomingEvents.map(event => (
+                    <div key={event.id} className="list-group-item border-0 px-0 py-2">
+                      <div className="d-flex justify-content-between">
+                        <strong>{event.title}</strong>
+                        <small className="text-muted">{moment(event.date).format('MMM D')}</small>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                        <small>{event.location}</small>
+                        <small>{moment(event.date).format('h:mm A')}</small>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <Button variant="outline-secondary" size="sm" className="w-100 mt-2">
+                  View Calendar
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+
+          {/* Projects Progress */}
+          <Col md={8}>
+            <Card className="shadow-sm">
+              <Card.Body>
+                <Card.Title>Your Projects</Card.Title>
+                {dashboardData.projects.map(project => (
+                  <div key={project.id} className="mb-3">
+                    <div className="d-flex justify-content-between mb-1">
+                      <span>{project.name}</span>
+                      <small className="text-muted">Due: {moment(project.deadline).format('MMM D, YYYY')}</small>
+                    </div>
+                    <ProgressBar 
+                      now={project.progress} 
+                      label={`${project.progress}%`} 
+                      variant={project.progress > 80 ? 'success' : project.progress > 50 ? 'info' : 'warning'}
+                    />
+                  </div>
+                ))}
+              </Card.Body>
+            </Card>
+          </Col>
+
+          {/* Recent Activities */}
+          <Col md={4}>
+            <Card className="shadow-sm">
+              <Card.Body>
+                <Card.Title>Recent Activities</Card.Title>
+                <div className="list-group list-group-flush">
+                  {dashboardData.recentActivities.map(activity => (
+                    <div key={activity.id} className="list-group-item border-0 px-0 py-2">
+                      <div className="d-flex">
+                        <div className="me-3">
+                          <div className="bg-primary bg-opacity-10 text-primary rounded-circle p-2">
+                            <i className="bi bi-check-circle-fill"></i>
+                          </div>
+                        </div>
+                        <div>
+                          <h6 className="mb-0">{activity.action}</h6>
+                          <small className="text-muted">{activity.details}</small>
+                          <div className="text-muted small">{activity.time}</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Card.Body>
+            </Card>
+          </Col>
         </Row>
       </Container>
     </div>
-  );
+  ); 
 }

@@ -113,22 +113,14 @@ export default function EmpSidebar({ className }) {
         </Nav.Item>
         <Nav.Item className="mb-2">
           <Nav.Link
-            onClick={() => navigate('/attendance')}
+            onClick={() => navigate('/empdattendance')}
             className={`d-flex align-items-center py-2 px-3 rounded-3 ${isActive('/attendance') ? 'bg-primary text-white' : 'text-dark hover-bg-light'}`}
           >
             <People className="me-3" size={18} />
             <span className="fs-6">Attendance</span>
           </Nav.Link>
         </Nav.Item>
-        <Nav.Item className="mb-2">
-          <Nav.Link
-            onClick={() => navigate('/attendance-history')}
-            className={`d-flex align-items-center py-2 px-3 rounded-3 ${isActive('/attendance-history') ? 'bg-primary text-white' : 'text-dark hover-bg-light'}`}
-          >
-            <ChatLeftText className="me-3" size={18} />
-            <span className="fs-6">Attendance History</span>
-          </Nav.Link>
-        </Nav.Item>
+       
       </Nav>
 
       <div className="p-3 mt-auto border-top">
